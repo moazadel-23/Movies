@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Movies.Models.Actor>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold mb-0">🎭 All Actors</h2>
+        <a href="/Admin/Actor/Create" class="btn btn-success fw-semibold px-4">➕ Create New Actor</a>
+    </div>
+
+    <div class="list-group shadow-sm">
+        @foreach (var actor in Model)
+        {
+            <div class="list-group-item d-flex align-items-center justify-content-between p-3 mb-2 rounded-3 shadow-sm bg-white">
+                <div class="d-flex align-items-center">
+                    <!-- الصورة -->
+                    <img src="~/ActorsImg/@System.IO.Path.GetFileName(actor.Img)"
+                         alt="@System.IO.Path.GetFileName(actor.Img)"
+                         class="rounded-circle me-3 border shadow-sm"
+                         style="width: 60px; height: 60px; object-fit: cover;" />
+
+                    <!-- اسم الصورة -->
+                   
+                </div>
+
+                <div class="d-flex gap-2">
+                    <!-- رابط مباشر لصفحة Edit داخل Area Admin -->
+                    <a href="/Admin/Actor/Edit/@actor.Act_Id" class="btn btn-outline-primary btn-sm">Edit</a>
+
+                    <!-- رابط مباشر لصفحة Delete داخل Area Admin -->
+                    <form action="/Admin/Actor/Delete/@actor.Act_Id" method="post" style="display:inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,24 @@
+﻿@model Movies.Models.Category
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Create Category</h2>
+
+<form action="/Admin/Category/Create" method="post">
+    @Html.AntiForgeryToken()
+    <div class="mb-3">
+        <label for="Name" class="form-label">Name</label>
+        <input type="text" id="Name" name="Name" value="@Model?.Name" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="Status" class="form-label">Status</label>
+        <input type="number" id="Status" name="Status" value="@Model?.Status ?? 1" class="form-control" />
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a href="/Admin/Category/Index" class="btn btn-secondary">Back</a>
+    </div>
+</form>

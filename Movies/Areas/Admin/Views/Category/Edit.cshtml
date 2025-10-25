@@ -1,0 +1,27 @@
+﻿@model Movies.Models.Category
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Edit Category</h2>
+<form action="/Admin/Category/Edit/@Model.Cat_Id" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Cat_Id" value="@Model.Cat_Id" />
+
+    <div class="mb-3">
+        <label for="Name" class="form-label">Name</label>
+        <input type="text" id="Name" name="Name" value="@Model.Name" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="Status" class="form-label">Status</label>
+        <input type="number" id="Status" name="Status" value="@Model.Status" class="form-control" />
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="/Admin/Category/Index" class="btn btn-secondary">Back</a>
+    </div>
+</form>
+
+

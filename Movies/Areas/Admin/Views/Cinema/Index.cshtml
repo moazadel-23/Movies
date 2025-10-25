@@ -1,0 +1,70 @@
+﻿@model IEnumerable<Movies.Models.Cinema>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold mb-0">🎬 All Directors</h2>
+        <a class="btn btn-success fw-semibold px-4" href="/Admin/Cinema/Create">
+            ➕ Create New Cinema
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            No Directors available yet. Click <strong>Create New Cinema</strong> to add one!
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-sm rounded-4">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-primary text-center">
+                    <tr>
+                        <th style="width: 150px;">Image</th>
+                        <th style="width: 180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="text-center">
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Img))
+                                {
+                                    <img src="/CinemaImage/@item.Img"
+                                         alt="Cinema Image"
+                                         class="rounded-circle border shadow-sm"
+                                         style="width: 80px; height: 80px; object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No Image</span>
+                                }
+                            </td>
+                    
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a class="btn btn-outline-primary btn-sm px-3"
+                                       href="/Admin/Cinema/Edit/@item.Cin_Id"
+                                       asp-route-id="@item.Cin_Id">
+                                        ✏️ Edit
+                                    </a>
+
+                                    <a class="btn btn-outline-danger btn-sm px-3"
+                                       href="/Admin/Cinema/Delete/@item.Cin_Id"
+                                       asp-route-id="@item.Cin_Id">                            
+                                        🗑️ Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

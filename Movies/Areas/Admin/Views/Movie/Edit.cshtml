@@ -1,0 +1,80 @@
+﻿@model Movies.Models.Movie
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Mov_Id" />
+
+    <div class="form-group">
+        <label>Name</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Price</label>
+        <input asp-for="Price" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="form-group">
+        <label>Date</label>
+        <input asp-for="Date" class="form-control" type="datetime-local" />
+    </div>
+
+    <div class="form-group">
+        <label>Status</label>
+        <input asp-for="Status" type="checkbox" />
+    </div>
+
+    <div class="form-group">
+        <label>Main Image</label>
+        <input type="file" name="MainImgFile" class="form-control" />
+        @if(!string.IsNullOrEmpty(Model.MainImg))
+        {
+            <img src="/MovieImages/@Model.MainImg" width="80" />
+        }
+    </div>
+
+    <div class="form-group">
+        <label>Sub Image</label>
+        <input type="file" name="SubImgFile" class="form-control" />
+        @if(!string.IsNullOrEmpty(Model.SubImg))
+        {
+            <img src="/MovieImages/@Model.SubImg" width="80" />
+        }
+    </div>
+
+    <div class="form-group">
+        <label>Cinema</label>
+        <select asp-for="CinemaId" asp-items="@(new SelectList(ViewBag.Cinemas, "Cin_Id", "Img", Model.CinemaId))" class="form-control">
+            <option value="">Select Cinema</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Category</label>
+        <select asp-for="CategoryId" asp-items="@(new SelectList(ViewBag.Categories, "Cat_Id", "Name", Model.CategoryId))" class="form-control">
+            <option value="">Select Category</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Actors</label><br />
+        @foreach (var actor in ViewBag.Actors as List<Movies.Models.Actor>)
+        {
+            var isChecked = Model.MovieActors.Any(ma => ma.Act_Id == actor.Act_Id);
+            <input type="checkbox" name="SelectedActors" value="@actor.Act_Id" @(isChecked ? "checked" : "") /> @actor.Act_Id <br />
+        }
+    </div>
+
+    <div class="form-group mt-2">
+        <input type="submit" value="Save" class="btn btn-primary" />
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </div>
+</form>

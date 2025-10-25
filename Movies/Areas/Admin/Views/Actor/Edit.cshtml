@@ -1,0 +1,34 @@
+﻿@model Movies.Models.Actor
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Edit Actor</h2>
+
+<form action="/Admin/Actor/Edit/@Model.Act_Id" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="Act_Id" value="@Model.Act_Id" />
+
+    <div class="mb-3">
+        <label for="Name" class="form-label">Name</label>
+        <input type="text" id="Name" name="Name" value="@Model.Img" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="ImgFile" class="form-label">Upload New Image (optional)</label>
+        <input type="file" id="ImgFile" name="ImgFile" class="form-control" accept="image/*" />
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Img))
+    {
+        <div class="mb-3">
+            <label class="form-label">Current Image</label><br />
+            <img src="@Model.Img" alt="actor image" style="width:100px;height:100px;object-fit:cover;border-radius:5px;" />
+        </div>
+    }
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="/Admin/Actor/Index" class="btn btn-secondary">Back</a>
+    </div>
+</form>

@@ -1,0 +1,85 @@
+﻿@model Movies.ViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .card {
+        transition: all 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        transform: scale(1.03);
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+    }
+
+    #preview {
+        max-width: 200px;
+        display: none;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4">
+                    <h3 class="text-center text-primary mb-4 fw-bold">Add New Actor</h3>
+
+
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Product Image</label>
+                            <input type="file" name="ImgFile" class="form-control" accept="image/*" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        const preview = document.getElementById('preview');
+        const imgName = document.getElementById('ImgName');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+
+            // ضع اسم الصورة في حقل النص
+            imgName.value = input.files[0].name;
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+            imgName.value = '';
+        }
+    }
+</script>

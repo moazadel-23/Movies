@@ -1,0 +1,294 @@
+﻿@model Movies.ViewModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Create Movie</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="Name" class="form-label">Name</label>
+        <input type="text" id="Name" name="Name" value="@Model?.Movie.Name" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="Name" class="form-label">Description</label>
+        <input type="text" id="Name" name="Name" value="@Model?.Movie.Description" class="form-control" 
+        required />
+    </div>
+
+
+    <div class="mb-3">
+        <label for="Name" class="form-label">Price</label>
+        <input type="number" id="Name" name="Name" value="@Model?.Movie.Price" class="form-control"
+               required />
+    </div>
+
+    <div class="mb-3">
+        <label for="Name" class="form-label">Date</label>
+        <input type="date" id="Name" name="Name" value="@Model?.Movie.Date" class="form-control"
+               required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Status</label>
+        <div class="form-check form-switch mt-2">
+            <input asp-for="Status" class="form-check-input" type="checkbox" id="StatusSwitch" />
+            <label class="form-check-label" for="StatusSwitch">
+                @((Model?.Movie.Status ?? false) ? "Active" : "Inactive")
+            </label>
+        </div>
+    </div>
+
+    <style>
+        .form-check-input {
+            width: 2.6em;
+            height: 1.3em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+            .form-check-input:checked {
+                background-color: #0d6efd;
+                border-color: #0d6efd;
+                box-shadow: 0 0 6px rgba(13, 110, 253, 0.5);
+            }
+
+        .form-check-label {
+            margin-left: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #333;
+        }
+    </style>
+
+    <script>
+        document.getElementById("StatusSwitch").addEventListener("change", function() {
+            const label = document.querySelector("label[for='StatusSwitch']");
+            label.textContent = this.checked ? "Active" : "Inactive";
+        });
+    </script>
+
+
+    <!-- Main Image -->
+    <div class="form-group mb-3">
+        <label>Main Image</label>
+        <input type="file" name="MainImgFile" class="form-control" accept="image/*" onchange="previewMainImage(event)" />
+        <div class="mt-2">
+            <img id="mainImagePreview" src="#" alt="Main Image Preview" style="display:none; width:150px; height:150px; object-fit:cover; border:1px solid #ccc;" />
+        </div>
+    </div>
+
+    <!-- Sub Images -->
+    <div class="form-group mb-3">
+        <label class="form-label fw-semibold">Sub Images</label>
+        <input type="file" name="SubImgFiles" class="form-control" multiple accept="image/*" onchange="previewSubImages(event)" />
+        <small class="text-muted">You can select multiple images</small>
+        <div id="subImagesPreview" class="d-flex flex-wrap mt-3"></div>
+    </div>
+
+    <script>
+        // عرض صورة واحدة رئيسية
+        function previewMainImage(event) {
+            const preview = document.getElementById("mainImagePreview");
+            const file = event.target.files[0];
+
+            if(file){
+                const reader = new FileReader();
+                reader.onload = function(e){
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // عرض أكثر من صورة فرعية
+        function previewSubImages(event){
+            const previewContainer = document.getElementById("subImagesPreview");
+            previewContainer.innerHTML = ""; // مسح الصور القديمة
+
+            const files = event.target.files;
+            if(files.length > 0){
+                Array.from(files).forEach(file=>{
+                    const reader = new FileReader();
+                    reader.onload = function(e){
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+                        img.className = "m-2 rounded shadow-sm";
+                        img.style.width = "100px";
+                        img.style.height = "100px";
+                        img.style.objectFit = "cover";
+                        previewContainer.appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+    </script>
+
+
+<script>
+    function previewSubImages(event) {
+        const previewContainer = document.getElementById("subImagesPreview");
+        previewContainer.innerHTML = ""; // يمسح الصور القديمة
+
+        const files = event.target.files;
+        if (files.length > 0) {
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.className = "m-2 rounded shadow-sm";
+                    img.style.width = "100px";
+                    img.style.height = "100px";
+                    img.style.objectFit = "cover";
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+</script>
+
+
+    <h6>Category</h6>
+    <div class="col-md-2">
+        <select name="categoryId" class="form-control">
+            <option>--Select Category--</option>
+            @* @foreach(var item in ViewData["categories"] as IEnumerable<Category>)
+                                {
+                                    <option value="">@item.Name</option>
+                                } *@
+
+            @foreach (var item in ViewBag.categories)
+            {
+                if (item.Cat_Id == ViewBag.categoryId)
+                {
+                    <option value="@item.Cat_Id" selected>@item.Name</option>
+                }
+                else
+                {
+                    <option value="@item.Cat_Id">@item.Name</option>
+                }
+            }
+        </select>
+    </div>
+
+    <h6>Cinema</h6>
+    <div class="col-md-2">
+        <select name="CinemaId" class="form-control">
+            <option>--Select Category--</option>
+
+            @foreach (var item in ViewBag.Directors)
+            {
+                if (item.Cin_Id == ViewBag.categoryId)
+                {
+                    <option value="@item.Cin_Id" selected>@item.Cin_Id</option>
+                }
+                else
+                {
+                    <option value="@item.Cin_Id">@item.Cin_Id</option>
+                }
+            }
+            <div class="form-group mt-4">
+                <label class="mb-2 fw-semibold">Select Actors</label>
+                <input type="hidden" id="selectedActors" name="SelectedActors" />
+                
+                <div class="d-flex gap-3 flex-wrap mt-3">
+                    @foreach (var actor in ViewBag.Actors)
+                    {
+                        <div class="actor-wrapper position-relative text-center">
+                            <img src="~/ActorsImg/@actor.Img"
+                                 asp-append-version="true"
+                                 alt="@actor.Img"
+                                 data-id="@actor.Act_Id"
+                                 class="actor-img rounded-3 border shadow-sm"
+                                 style="width:100px; height:100px; object-fit:cover; cursor:pointer;" />
+
+
+                            <div class="check-overlay d-none">
+                                <div class="check-box">✔</div>
+                            </div>
+                            <p class="mt-1 small fw-semibold">@("Actor " + actor.Act_Id)</p>
+                        </div>
+                    }
+                </div>
+            </div>
+           
+
+
+            <style>
+                .actor-wrapper {
+                    position: relative;
+                    display: inline-block;
+                }
+
+                .check-overlay {
+                    position: absolute;
+                    top: 5px;
+                    right: 5px;
+                    background: rgba(0, 123, 255, 0.8);
+                    color: white;
+                    width: 25px;
+                    height: 25px;
+                    border-radius: 5px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 16px;
+                }
+
+                .actor-selected {
+                    border: 3px solid #007bff !important;
+                    filter: brightness(0.9);
+                }
+            </style>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const selected = new Set();
+                    const input = document.getElementById("selectedActors");
+
+                    document.querySelectorAll(".actor-img").forEach(img => {
+                        img.addEventListener("click", function () {
+                            const id = this.getAttribute("data-id");
+                            const overlay = this.parentElement.querySelector(".check-overlay");
+
+                            if (selected.has(id)) {
+                                selected.delete(id);
+                                this.classList.remove("actor-selected");
+                                overlay.classList.add("d-none");
+                            } else {
+                                selected.add(id);
+                                this.classList.add("actor-selected");
+                                overlay.classList.remove("d-none");
+                            }
+
+                            input.value = Array.from(selected).join(",");
+                        });
+                    });
+                });
+            </script>
+
+    <style>
+        .actor-card {
+            transition: all 0.2s ease;
+        }
+
+        input[type="checkbox"]:checked + .actor-card {
+            border: 3px solid #007bff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.6);
+        }
+    </style>
+
+
+    <div class="form-group mt-3">
+        <button type="submit" href="/Admin/Movie/Index" class="btn btn-primary">Create</button>
+        <a href="/Admin/Movie/Index" class="btn btn-secondary">Back</a>
+
+    </div>
+</form>

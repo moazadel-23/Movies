@@ -1,0 +1,102 @@
+﻿@using Movies
+@model ViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container my-4">
+    <h3 class="text-center mb-4 fw-bold text-primary">🎞️ Movie Collection</h3>
+    <p class="text-center text-muted mb-5 small">
+        Explore our latest movies and discover their genres and release years.
+    </p>
+
+    <div class="row g-3">
+        <!-- فيلم 1 -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card movie-card border-0 shadow-sm rounded-4">
+                <img src="~/MoviesImg/movie1.jpg" class="card-img-top" alt="Movie 1"
+                     style="height:180px; object-fit:cover; border-top-left-radius:1rem; border-top-right-radius:1rem;">
+                <div class="card-body p-3">
+                    <h6 class="card-title fw-semibold mb-1 text-dark">The Silent Path</h6>
+                    <p class="text-muted mb-1 small"><i class="bi bi-tags"></i> Drama</p>
+                    <p class="text-muted mb-1 small"><i class="bi bi-calendar"></i> 2023</p>
+                    <p class="text-secondary small mb-2">
+                        A moving story about self-discovery and human connection...
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- فيلم 2 -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card movie-card border-0 shadow-sm rounded-4">
+                <img src="~/MoviesImg/movie2.jpg" class="card-img-top" alt="Movie 2"
+                     style="height:180px; object-fit:cover; border-top-left-radius:1rem; border-top-right-radius:1rem;">
+                <div class="card-body p-3">
+                    <h6 class="card-title fw-semibold mb-1 text-dark">Chasing Stars</h6>
+                    <p class="text-muted mb-1 small"><i class="bi bi-tags"></i> Sci-Fi</p>
+                    <p class="text-muted mb-1 small"><i class="bi bi-calendar"></i> 2024</p>
+                    <p class="text-secondary small mb-2">
+                        A young astronaut’s journey to uncover the mysteries of space.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- فيلم 3 -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card movie-card border-0 shadow-sm rounded-4">
+                <img src="~/MoviesImg/movie3.jpg" class="card-img-top" alt="Movie 3"
+                     style="height:180px; object-fit:cover; border-top-left-radius:1rem; border-top-right-radius:1rem;">
+                <div class="card-body p-3">
+                    <h6 class="card-title fw-semibold mb-1 text-dark">Lost Memories</h6>
+                    <p class="text-muted mb-1 small"><i class="bi bi-tags"></i> Romance</p>
+                    <p class="text-muted mb-1 small"><i class="bi bi-calendar"></i> 2022</p>
+                    <p class="text-secondary small mb-2">
+                        A heartfelt drama exploring love, time, and second chances.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- فيلم 4 -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card movie-card border-0 shadow-sm rounded-4">
+                <img src="~/MoviesImg/movie4.jpg" class="card-img-top" alt="Movie 4"
+                     style="height:180px; object-fit:cover; border-top-left-radius:1rem; border-top-right-radius:1rem;">
+                <div class="card-body p-3">
+                    <h6 class="card-title fw-semibold mb-1 text-dark">Echoes of War</h6>
+                    <p class="text-muted mb-1 small"><i class="bi bi-tags"></i> Action</p>
+                    <p class="text-muted mb-1 small"><i class="bi bi-calendar"></i> 2021</p>
+                    <p class="text-secondary small mb-2">
+                        A gripping story of bravery and survival in times of chaos.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .movie-card {
+        transition: all 0.25s ease-in-out;
+    }
+
+        .movie-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+    .card-title {
+        font-size: 0.95rem;
+    }
+
+    .card-body p {
+        margin-bottom: 0.25rem;
+    }
+
+    .container {
+        max-width: 1100px;
+    }
+</style>
+

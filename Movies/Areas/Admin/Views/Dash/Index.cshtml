@@ -1,0 +1,50 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Statistics Dashboard";
+}
+
+<div class="container my-5">
+    <h2 class="text-center mb-4 display-6 fw-bold text-primary">📊 Cinema Management Statistics</h2>
+
+    <div class="row g-4 justify-content-center">
+        <!-- Movies -->
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center border-0 rounded-4 bg-light">
+                <div class="card-body py-4">
+                    <h5 class="card-title text-secondary">🎬 Movies</h5>
+                    <h2 class="display-5 fw-bold text-primary">@Model.MoviesCount</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actors -->
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center border-0 rounded-4 bg-light">
+                <div class="card-body py-4">
+                    <h5 class="card-title text-secondary">👨‍🎤 Actors</h5>
+                    <h2 class="display-5 fw-bold text-success">@Model.ActorsCount</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center border-0 rounded-4 bg-light">
+                <div class="card-body py-4">
+                    <h5 class="card-title text-secondary">🏷️ Categories</h5>
+                    <h2 class="display-5 fw-bold text-warning">@Model.CategoriesCount</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cinemas -->
+        <div class="col-md-3">
+            <div class="card shadow-sm text-center border-0 rounded-4 bg-light">
+                <div class="card-body py-4">
+                    <h5 class="card-title text-secondary">🎦 Cinemas</h5>
+                    <h2 class="display-5 fw-bold text-danger">@Model.CinemasCount</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
