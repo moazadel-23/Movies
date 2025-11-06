@@ -1,22 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Movies.Models;
+using Movies.Repositories.IRepository;
+using Movies.Repository;
+using Movies.Utilities;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Movies.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}, {SD.EMPLOYEE_ROLE}")]
     public class CinemaController : Controller
     {
-        private readonly ApplicationDbContext _context;
 
-        public CinemaController(ApplicationDbContext context)
+        private readonly IRepository<Cinema> _cinemaRepository;
+        public CinemaController(IRepository<Cinema> cinemaRepository)
         {
-            _context = context;
+            _cinemaRepository = cinemaRepository;
         }
 
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var Directors = _context.Directors.ToList();
+            var Directors =await _cinemaRepository.GetAsync(cancellationToken: cancellationToken);
             return View(Directors);
         }
 
@@ -28,7 +34,7 @@ namespace Movies.Areas.Admin.Controllers
 
 
         [HttpPost]
-        public IActionResult Create(Cinema cinema, IFormFile ImgFile)
+        public async Task<IActionResult> Create(Cinema cinema, IFormFile ImgFile, CancellationToken cancellationToken)
         {
             if (ImgFile != null && ImgFile.Length > 0)
             {
@@ -47,23 +53,25 @@ namespace Movies.Areas.Admin.Controllers
                 cinema.Img = fileName;
             }
 
-            _context.Directors.Add(cinema);
-            _context.SaveChanges();
+            await _cinemaRepository.AddAsync(cinema, cancellationToken);
+            await _cinemaRepository.CommitAsync(cancellationToken);
             return RedirectToAction(nameof(Index));
         }
 
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}")]
+        public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
         {
-            var cinema = _context.Directors.FirstOrDefault(c => c.Cin_Id == id);
+            var cinema =await _cinemaRepository.GetOneAsync(c => c.Cin_Id == id, cancellationToken: cancellationToken);
             if (cinema == null)
                 return RedirectToAction("NotFoundPage", "Home");
             return View(cinema);
         }
    
         [HttpPost]
-        public IActionResult Edit(Cinema cinema, IFormFile ImgFile)
+        [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}")]
+        public async Task<IActionResult> Edit(Cinema cinema, IFormFile ImgFile, CancellationToken cancellationToken)
         {
             if (ImgFile != null && ImgFile.Length > 0)
             {
@@ -82,20 +90,24 @@ namespace Movies.Areas.Admin.Controllers
                 cinema.Img = fileName;
             }
 
-            _context.Directors.Update(cinema);
-            _context.SaveChanges();
+            _cinemaRepository.Update(cinema);
+            await _cinemaRepository.CommitAsync(cancellationToken);
             return RedirectToAction(nameof(Index));
         }
 
-
-        public IActionResult Delete(int id)
+        [HttpPost]
+        [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}")]
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var cinema = _context.Directors.FirstOrDefault(c => c.Cin_Id == id);
-            if (cinema == null) return RedirectToAction("NotFoundPage", "Home");
+            var cinema = await _cinemaRepository.GetOneAsync(c => c.Cin_Id == id, cancellationToken: cancellationToken);
+            if (cinema == null)
+                return RedirectToAction("NotFoundPage", "Home");
 
-            _context.Directors.Remove(cinema);
-            _context.SaveChanges();
+            _cinemaRepository.Delete(cinema);
+            await _cinemaRepository.CommitAsync(cancellationToken);
+
             return RedirectToAction(nameof(Index));
         }
+
     }
 }

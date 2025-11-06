@@ -1,22 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Movies.Models;
+using Movies.Repositories.IRepository;
+using Movies.Repository;
+using Movies.Utilities;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Movies.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}, {SD.EMPLOYEE_ROLE}")]
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public CategoryController(ApplicationDbContext context)
+        private readonly IRepository<Category> _categoryRepository;
+        public CategoryController(IRepository<Category> categoryRepository)
         {
-            _context = context;
+            _categoryRepository = categoryRepository;
         }
-
- 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var categories = _context.Categories.ToList();
+            var categories =await _categoryRepository.GetAsync(cancellationToken : cancellationToken);
             return View(categories); 
         }
 
@@ -30,12 +34,12 @@ namespace Movies.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Category category)
+        public async Task<IActionResult> Create(Category category, CancellationToken cancellationToken)
         {
             if (ModelState.IsValid)
             {
-                _context.Categories.Add(category);
-                _context.SaveChanges();
+               await _categoryRepository.AddAsync(category, cancellationToken : cancellationToken);
+               await _categoryRepository.CommitAsync(cancellationToken);
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -43,9 +47,10 @@ namespace Movies.Areas.Admin.Controllers
 
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}")]
+        public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
         {
-            var category = _context.Categories.Find(id);
+            var category =await _categoryRepository.GetOneAsync(e => e.Cat_Id == id, cancellationToken: cancellationToken);
             if (category == null) return NotFound();
             return View(category);
         }
@@ -53,12 +58,13 @@ namespace Movies.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Category category)
+        [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}")]
+        public async Task<IActionResult> Edit(Category category, CancellationToken cancellationToken)
         {
             if (ModelState.IsValid)
             {
-                _context.Categories.Update(category);
-                _context.SaveChanges();
+                _categoryRepository.Update(category);
+                await _categoryRepository.CommitAsync(cancellationToken);
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -67,13 +73,14 @@ namespace Movies.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}")]
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var category = _context.Categories.Find(id);
+            var category =await _categoryRepository.GetOneAsync(e => e.Cat_Id == id, cancellationToken:cancellationToken);
             if (category == null) return NotFound();
 
-            _context.Categories.Remove(category);
-            _context.SaveChanges();
+            _categoryRepository.Delete(category);
+            await _categoryRepository.CommitAsync(cancellationToken);
             return RedirectToAction(nameof(Index));
         }
     }

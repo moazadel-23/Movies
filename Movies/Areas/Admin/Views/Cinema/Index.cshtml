@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Movies.Models.Cinema>
+﻿@using Movies.Utilities
+@model IEnumerable<Movies.Models.Cinema>
 
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -47,19 +48,27 @@
                             </td>
                     
                             <td>
-                                <div class="d-flex justify-content-center gap-2">
-                                    <a class="btn btn-outline-primary btn-sm px-3"
-                                       href="/Admin/Cinema/Edit/@item.Cin_Id"
-                                       asp-route-id="@item.Cin_Id">
-                                        ✏️ Edit
-                                    </a>
+                                @if (User.IsInRole(SD.SUPER_ADMIN_ROLE) || User.IsInRole(SD.ADMIN_ROLE))
+                                {
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a class="btn btn-outline-primary btn-sm px-3"
+                                           href="/Admin/Cinema/Edit/@item.Cin_Id"
+                                           asp-route-id="@item.Cin_Id">
+                                            ✏️ Edit
+                                        </a>
 
-                                    <a class="btn btn-outline-danger btn-sm px-3"
-                                       href="/Admin/Cinema/Delete/@item.Cin_Id"
-                                       asp-route-id="@item.Cin_Id">                            
-                                        🗑️ Delete
-                                    </a>
-                                </div>
+                                        <a class="btn btn-outline-danger btn-sm px-3"
+                                           href="/Admin/Cinema/Delete/@item.Cin_Id"
+                                           asp-route-id="@item.Cin_Id">
+                                            🗑️ Delete
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <td>No Action</td>
+                                }
+
                             </td>
                         </tr>
                     }

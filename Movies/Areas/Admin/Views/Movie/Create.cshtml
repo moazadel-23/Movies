@@ -1,4 +1,6 @@
-﻿@model Movies.ViewModel
+﻿@using Movies
+@using Movies.ViewModel
+
 
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -9,27 +11,24 @@
 <form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="mb-3">
         <label for="Name" class="form-label">Name</label>
-        <input type="text" id="Name" name="Name" value="@Model?.Movie.Name" class="form-control" required />
+        <input type="text" id="Name" name="Name" value="@Model?.Name" class="form-control" required />
     </div>
 
     <div class="mb-3">
-        <label for="Name" class="form-label">Description</label>
-        <input type="text" id="Name" name="Name" value="@Model?.Movie.Description" class="form-control" 
-        required />
-    </div>
-
-
-    <div class="mb-3">
-        <label for="Name" class="form-label">Price</label>
-        <input type="number" id="Name" name="Name" value="@Model?.Movie.Price" class="form-control"
-               required />
+        <label for="Description" class="form-label">Description</label>
+        <input type="text" id="Description" name="Description" value="@Model?.Description" class="form-control" required />
     </div>
 
     <div class="mb-3">
-        <label for="Name" class="form-label">Date</label>
-        <input type="date" id="Name" name="Name" value="@Model?.Movie.Date" class="form-control"
-               required />
+        <label for="Price" class="form-label">Price</label>
+        <input type="number" id="Price" name="Price" value="@Model?.Price" class="form-control" required />
     </div>
+
+    <div class="mb-3">
+        <label for="Date" class="form-label">Date</label>
+        <input type="date" id="Date" name="Date" value="@Model?.Date.ToString("yyyy-MM-dd")" class="form-control" required />
+    </div>
+
 
     <div class="mb-3">
         <label class="form-label fw-semibold">Status</label>
@@ -80,7 +79,7 @@
         </div>
     </div>
 
-    <!-- Sub Images -->
+
     <div class="form-group mb-3">
         <label class="form-label fw-semibold">Sub Images</label>
         <input type="file" name="SubImgFiles" class="form-control" multiple accept="image/*" onchange="previewSubImages(event)" />
@@ -89,7 +88,7 @@
     </div>
 
     <script>
-        // عرض صورة واحدة رئيسية
+        
         function previewMainImage(event) {
             const preview = document.getElementById("mainImagePreview");
             const file = event.target.files[0];
@@ -156,14 +155,14 @@
 
     <h6>Category</h6>
     <div class="col-md-2">
-        <select name="categoryId" class="form-control">
+        <select name="CategoryId" class="form-control">
             <option>--Select Category--</option>
             @* @foreach(var item in ViewData["categories"] as IEnumerable<Category>)
                                 {
                                     <option value="">@item.Name</option>
                                 } *@
 
-            @foreach (var item in ViewBag.categories)
+            @foreach (var item in ViewBag.Categories)
             {
                 if (item.Cat_Id == ViewBag.categoryId)
                 {
