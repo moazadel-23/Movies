@@ -51,7 +51,7 @@ namespace Movies.Areas.Identity.Controllers
 
             var result = await _userManager.CreateAsync(user, registerVM.Password);
 
-            if (!result.Succeeded)
+            if (!(result.Succeeded))
             {
                 foreach (var item in result.Errors)
                 {
@@ -69,7 +69,7 @@ namespace Movies.Areas.Identity.Controllers
                 , $"<h1>Confirm Your Email By Clicking <a href='{link}'>Here</a></h1>");
 
             await _userManager.AddToRoleAsync(user, SD.CUSTOMER_ROLE);
-
+         
             return RedirectToAction("Login");
         }
         public async Task<IActionResult> ConfirmEmail(string userId, string token)

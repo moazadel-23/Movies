@@ -20,7 +20,8 @@ namespace Movies
                 option.UseSqlServer(connection);
             });
 
-          
+         
+
             services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddScoped<IRepository<Movie>, Repository<Movie>>();

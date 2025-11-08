@@ -15,7 +15,7 @@ namespace Movies.Areas.Identity.Controllers
             _userManager = userManager;
         }
 
-        // ======= عرض الصفحة =======
+
         public async Task<IActionResult> UpdateProfile()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -29,13 +29,13 @@ namespace Movies.Areas.Identity.Controllers
                 Address = user.Address,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                ImgPath = user.ImgPath // 👈 نعرض الصورة الحالية
+                ImgPath = user.ImgPath 
             };
 
             return View(userVM);
         }
 
-        // ======= تحديث البيانات الشخصية =======
+   
         [HttpPost]
         public async Task<IActionResult> UpdateProfile(ApplicationUserVM applicationUserVM)
         {
@@ -60,7 +60,7 @@ namespace Movies.Areas.Identity.Controllers
             return RedirectToAction(nameof(UpdateProfile));
         }
 
-        // ======= تحديث كلمة المرور =======
+       
         [HttpPost]
         public async Task<IActionResult> UpdatePassword(ApplicationUserVM applicationUserVM)
         {
@@ -89,7 +89,7 @@ namespace Movies.Areas.Identity.Controllers
             return RedirectToAction(nameof(UpdateProfile));
         }
 
-        // ======= تحديث الصورة =======
+
         [HttpPost]
         public async Task<IActionResult> UpdateProfileImage(string ImgPath)
         {
@@ -98,7 +98,7 @@ namespace Movies.Areas.Identity.Controllers
             if (user is null)
                 return NotFound();
 
-           user.ImgPath = ImgPath; // نحفظ الاسم فقط مثلاً "user1.png"
+           user.ImgPath = ImgPath; 
             await _userManager.UpdateAsync(user);
 
             TempData["success-notification"] = "Profile image updated successfully!";
