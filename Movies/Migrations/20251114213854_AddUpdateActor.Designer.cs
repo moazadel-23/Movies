@@ -12,8 +12,8 @@ using Movies;
 namespace Movies.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251105183540_addFinalMig")]
-    partial class addFinalMig
+    [Migration("20251114213854_AddUpdateActor")]
+    partial class AddUpdateActor
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -166,7 +166,14 @@ namespace Movies.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Act_Id"));
 
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
                     b.Property<string>("Img")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -199,6 +206,9 @@ namespace Movies.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImgPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
@@ -278,6 +288,24 @@ namespace Movies.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("applicationUserOTPs");
+                });
+
+            modelBuilder.Entity("Movies.Models.Cart", b =>
+                {
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Mov_Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TicketCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("ApplicationUserId", "Mov_Id");
+
+                    b.HasIndex("Mov_Id");
+
+                    b.ToTable("carts");
                 });
 
             modelBuilder.Entity("Movies.Models.Category", b =>
@@ -383,6 +411,128 @@ namespace Movies.Migrations
                     b.ToTable("MovieActors");
                 });
 
+            modelBuilder.Entity("Movies.Models.Promotion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsValid")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Mov_Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PublishAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("movieMov_Id")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("movieMov_Id");
+
+                    b.ToTable("promotions");
+                });
+
+            modelBuilder.Entity("Movies.ViewModel.ApplicationUserVM", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CurrentPassword")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImgPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewPassword")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApplicationUserVM");
+                });
+
+            modelBuilder.Entity("Movies.ViewModel.NewPasswordVM", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConfirmPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NewPasswordVM");
+                });
+
+            modelBuilder.Entity("Movies.ViewModel.ValidateOTPVM", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OTP")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ValidateOTPVM");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -445,6 +595,25 @@ namespace Movies.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
+            modelBuilder.Entity("Movies.Models.Cart", b =>
+                {
+                    b.HasOne("Movies.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Movies.Models.Movie", "Movie")
+                        .WithMany()
+                        .HasForeignKey("Mov_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Movies.Models.Movie", b =>
                 {
                     b.HasOne("Movies.Models.Category", "Category")
@@ -481,6 +650,17 @@ namespace Movies.Migrations
                     b.Navigation("Actor");
 
                     b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("Movies.Models.Promotion", b =>
+                {
+                    b.HasOne("Movies.Models.Movie", "movie")
+                        .WithMany()
+                        .HasForeignKey("movieMov_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("movie");
                 });
 
             modelBuilder.Entity("Movies.Models.Actor", b =>

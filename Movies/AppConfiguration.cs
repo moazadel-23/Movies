@@ -30,6 +30,8 @@ namespace Movies
             services.AddScoped<IRepository<Cinema>, Repository<Cinema>>();
             services.AddScoped<IRepository<Actor>, Repository<Actor>>();
             services.AddScoped<IRepository<ApplicationUserOTP>, Repository<ApplicationUserOTP>>();
+            services.AddScoped<IRepository<Cart>, Repository<Cart>>();
+            services.AddScoped<IRepository<Promotion>, Repository<Promotion>>();
 
             services.AddScoped<IDBInitilizer, DBInitilizer>();
 

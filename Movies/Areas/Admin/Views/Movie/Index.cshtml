@@ -3,93 +3,192 @@
 
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Movies Management";
 }
 
-<h2>Movies</h2>
+<style>
+    /* تنسيقات عامة */
+    body {
+        background-color: #f8f9fa;
+    }
 
-<p>
-    <a class="btn btn-primary" href="/Admin/Movie/Create">Create New Movie</a>
-</p>
+    h2 {
+        margin-top: 20px;
+        font-weight: 700;
+        color: #343a40;
+    }
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Main Image</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Date</th>
-            <th>Cinema</th>
-            <th>Category</th>
-            <th>Actors</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var movie in Model)
-        {
-            <tr>
-                <!-- Main Image -->
-                <td>
-                    @if (!string.IsNullOrEmpty(movie.MainImg))
-                    {
-                        <img src="@Url.Content("~/MovieImages/" + movie.MainImg)" width="80" style="object-fit: cover;" />
-                    }
-                </td>
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        margin-top: 25px;
+    }
 
-                <!-- Movie Details -->
-                <td>@movie.Name</td>
-                <td>@movie.Price.ToString("C")</td>
-                <td>@movie.Date.ToString("g")</td>
+    /* جدول أنيق */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-                <!-- Cinema & Category -->
-               
-                    <td>
-                        @if (!string.IsNullOrEmpty(movie.Cinema.Img))
-                        {
-                        <img src="@Url.Content("~/CinemaImage/" + movie.Cinema.Img)" width="80" style="object-fit: cover;" />
-                        }
-                    </td>
-                
-                <td>@movie.Category?.Name</td>
+    th {
+        background-color: #212529;
+        color: white;
+        text-align: center;
+        vertical-align: middle;
+    }
 
-                <!-- Actors -->
-                <td>
-                    @if (!string.IsNullOrEmpty(movie.Cinema.Img))
-                    {
-                        <img src="@Url.Content("~/ActorsImg/" + movie.Name)" width="80" style="object-fit: cover;" />
-                    }
-                </td>
+    td {
+        text-align: center;
+        vertical-align: middle;
+    }
 
-                <!-- Actions -->
-                @if (User.IsInRole(SD.SUPER_ADMIN_ROLE) || User.IsInRole(SD.ADMIN_ROLE))
+    /* صور متساوية */
+    .movie-img, .cinema-img, .actor-img {
+        width: 90px;
+        height: 110px;
+        border-radius: 8px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .movie-img:hover, .cinema-img:hover, .actor-img:hover {
+        transform: scale(1.05);
+    }
+
+    /* أزرار الأكشن */
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .btn-warning {
+        color: #fff;
+    }
+
+    .btn-danger {
+        color: #fff;
+    }
+
+    .action-btns {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* زر الإضافة */
+    .create-btn {
+        margin-top: 15px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+</style>
+
+<div class="container">
+    <h2>🎬 Movies Management</h2>
+
+    <p>
+        <a class="btn btn-primary create-btn" href="/Admin/Movie/Create">
+            ➕ Create New Movie
+        </a>
+    </p>
+
+    <div class="table-container">
+        <table class="table table-bordered table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Main Image</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Date</th>
+                    <th>Cinema</th>
+                    <th>Category</th>
+                    <th>Actors</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var movie in Model)
                 {
-                    <td>
-                        <a asp-area="Admin"
-                           asp-controller="Movie"
-                           asp-action="Edit"
-                           asp-route-id="@movie.Mov_Id"
-                           class="btn btn-warning">
-                            Edit
-                        </a>
+                    <tr>
+                        <td><strong>@movie.Mov_Id</strong></td>
 
-                        <form asp-area="Admin"
-                              asp-controller="Movie"
-                              asp-action="Deletes"
-                              asp-route-id="@movie.Mov_Id"
-                              method="post"
-                              style="display:inline">
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
+                        <!-- Main Image -->
+                        <td>
+                            @if (!string.IsNullOrEmpty(movie.MainImg))
+                            {
+                                <img src="@Url.Content("~/MovieImages/" + movie.MainImg)" class="movie-img" alt="Movie Poster" />
+                            }
+                        </td>
 
+                        <td><strong>@movie.Name</strong></td>
+                        <td>@movie.Price.ToString("C")</td>
+                        <td>@movie.Date.ToString("g")</td>
 
-                    </td>
+                        <!-- Cinema -->
+                        <td>
+                            @if (!string.IsNullOrEmpty(movie.Cinema?.Img))
+                            {
+                                <img src="@Url.Content("~/CinemaImage/" + movie.Cinema.Img)" class="cinema-img" alt="Cinema" />
+                            }
+                      
+                        </td>
+
+                        <!-- Category -->
+                        <td>@movie.Category?.Name</td>
+                   
+
+                        <!-- Actors -->
+                        <td>
+                            @if (movie.MovieActors != null && movie.MovieActors.Any())
+                            {
+                            
+                                @if (movie.MovieActors.Count > 3)
+                                {
+                                    <div class="text-muted small">+@(movie.MovieActors.Count - 3) more</div>
+                                }
+                            }
+                        </td>
+
+                        <!-- Actions -->
+                        <td>
+                            @if (User.IsInRole(SD.SUPER_ADMIN_ROLE) || User.IsInRole(SD.ADMIN_ROLE))
+                            {
+                                <div class="action-btns">
+                                    <a asp-area="Admin"
+                                       asp-controller="Movie"
+                                       asp-action="Edit"
+                                       asp-route-id="@movie.Mov_Id"
+                                       class="btn btn-warning btn-sm">
+                                        ✏️ Edit
+                                    </a>
+
+                                    <form asp-area="Admin"
+                                          asp-controller="Movie"
+                                          asp-action="Deletes"
+                                          asp-route-id="@movie.Mov_Id"
+                                          method="post"
+                                          style="display:inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            🗑 Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No Actions</span>
+                            }
+                        </td>
+                    </tr>
                 }
-                else
-                {
-                    <td>No Actions</td>
-				}
-              
-            </tr>
-        }
-    </tbody>
-</table>
+            </tbody>
+        </table>
+    </div>
+</div>

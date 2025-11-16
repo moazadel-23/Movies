@@ -5,6 +5,7 @@ using Movies.Models;
 using Movies.Repositories.IRepository;
 using Movies.Repository;
 using Movies.Utilities.DBInitilizer;
+using Stripe;
 using System.IO;
 
 namespace Movies
@@ -30,7 +31,9 @@ namespace Movies
 
             builder.Services.RegisterConfig(ConnectionStrings);
 
-           
+            Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
+
             var app = builder.Build();
 
             var scope = app.Services.CreateScope();
@@ -48,18 +51,19 @@ namespace Movies
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
+
             app.MapControllerRoute(
-              name: "areas",          //Admin
-              pattern: "{area:exists}/{controller=Category}/{action=Index}/{id?}");
+                name: "areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+            );
+
             app.MapControllerRoute(
                 name: "default",
-              pattern: "{area=Identity}/{controller=Account}/{action=Register}/{id?}");
-            app.MapControllerRoute(
-              name: "areas",
-              pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
-);
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
             app.MapDefaultControllerRoute();
 
 

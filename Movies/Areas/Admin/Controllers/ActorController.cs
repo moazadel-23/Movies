@@ -82,9 +82,13 @@ namespace Movies.Areas.Admin.Controllers
         [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}")]
         public async Task<IActionResult> Edit(Actor actor, IFormFile? ImgFile, CancellationToken cancellationToken)
         {
-            var existingActor =await _actorRepository.GetOneAsync(e => e.Act_Id == actor.Act_Id, cancellationToken: cancellationToken);
+            var existingActor = await _actorRepository.GetOneAsync(e => e.Act_Id == actor.Act_Id, cancellationToken: cancellationToken);
             if (existingActor == null)
                 return NotFound();
+
+            //update 
+            existingActor.Name = actor.Name;
+            existingActor.Age = actor.Age;
 
             if (ImgFile != null && ImgFile.Length > 0)
             {
@@ -100,12 +104,13 @@ namespace Movies.Areas.Admin.Controllers
                     ImgFile.CopyTo(stream);
                 }
 
-                actor.Img = fileName;
+                existingActor.Img = fileName;
             }
 
             await _actorRepository.CommitAsync(cancellationToken);
             return RedirectToAction(nameof(Index));
         }
+
 
         [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}")]
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)

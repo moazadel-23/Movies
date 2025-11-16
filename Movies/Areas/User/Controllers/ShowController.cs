@@ -29,13 +29,13 @@ namespace Movies.Areas.User.Controllers
         {
             var movie = await _movieRepository.GetOneAsync(
                 e => e.Mov_Id == id,
-                include: [e => e.Category!, e => e.Cinema!, e => e.MovieActors, e => e.MovieActors.Select(ma => ma.Actor)],
+                include: [e => e.Category!, e => e.Cinema!, e => e.MovieActors],
                 cancellationToken: cancellationToken);
 
             if (movie == null)
                 return NotFound();
 
-            return RedirectToAction("Index");
+            return View(movie);
         }
     }
 }

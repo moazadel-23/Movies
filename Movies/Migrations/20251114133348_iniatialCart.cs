@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Movies.Migrations
 {
     /// <inheritdoc />
-    public partial class addFinalMig : Migration
+    public partial class iniatialCart : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,6 +22,25 @@ namespace Movies.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Actors", x => x.Act_Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ApplicationUserVM",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImgPath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CurrentPassword = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewPassword = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplicationUserVM", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -46,6 +65,7 @@ namespace Movies.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImgPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -91,6 +111,35 @@ namespace Movies.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Directors", x => x.Cin_Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NewPasswordVM",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ConfirmPassword = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NewPasswordVM", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ValidateOTPVM",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OTP = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ValidateOTPVM", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -255,6 +304,31 @@ namespace Movies.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "carts",
+                columns: table => new
+                {
+                    Mov_Id = table.Column<int>(type: "int", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TicketCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_carts", x => new { x.ApplicationUserId, x.Mov_Id });
+                    table.ForeignKey(
+                        name: "FK_carts_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_carts_Movies_Mov_Id",
+                        column: x => x.Mov_Id,
+                        principalTable: "Movies",
+                        principalColumn: "Mov_Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MovieActors",
                 columns: table => new
                 {
@@ -324,6 +398,11 @@ namespace Movies.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_carts_Mov_Id",
+                table: "carts",
+                column: "Mov_Id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MovieActors_Act_Id",
                 table: "MovieActors",
                 column: "Act_Id");
@@ -346,6 +425,9 @@ namespace Movies.Migrations
                 name: "applicationUserOTPs");
 
             migrationBuilder.DropTable(
+                name: "ApplicationUserVM");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -361,7 +443,16 @@ namespace Movies.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "carts");
+
+            migrationBuilder.DropTable(
                 name: "MovieActors");
+
+            migrationBuilder.DropTable(
+                name: "NewPasswordVM");
+
+            migrationBuilder.DropTable(
+                name: "ValidateOTPVM");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

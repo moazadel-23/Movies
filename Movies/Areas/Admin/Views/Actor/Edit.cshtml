@@ -3,32 +3,100 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Edit Actor</h2>
-
-<form action="/Admin/Actor/Edit/@Model.Act_Id" method="post" enctype="multipart/form-data">
-    @Html.AntiForgeryToken()
-    <input type="hidden" name="Act_Id" value="@Model.Act_Id" />
-
-    <div class="mb-3">
-        <label for="Name" class="form-label">Name</label>
-        <input type="text" id="Name" name="Name" value="@Model.Img" class="form-control" required />
-    </div>
-
-    <div class="mb-3">
-        <label for="ImgFile" class="form-label">Upload New Image (optional)</label>
-        <input type="file" id="ImgFile" name="ImgFile" class="form-control" accept="image/*" />
-    </div>
-
-    @if (!string.IsNullOrEmpty(Model.Img))
-    {
-        <div class="mb-3">
-            <label class="form-label">Current Image</label><br />
-            <img src="@Model.Img" alt="actor image" style="width:100px;height:100px;object-fit:cover;border-radius:5px;" />
-        </div>
+<style>
+    body {
+        background: #f8f9fa;
+        font-family: 'Poppins', sans-serif;
     }
 
-    <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary">Save</button>
-        <a href="/Admin/Actor/Index" class="btn btn-secondary">Back</a>
-    </div>
-</form>
+    .card {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        max-width: 500px;
+        margin: 40px auto;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 10px rgba(13,110,253,0.2);
+        }
+
+    #actorImg {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        display: block;
+        margin-top: 10px;
+    }
+
+    .btn-primary {
+        background-color: #0d6efd;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+        }
+
+    .btn-secondary {
+        border-radius: 8px;
+    }
+</style>
+
+<div class="card">
+    <h3 class="mb-4 text-center">Edit Actor</h3>
+
+    <form asp-action="Edit" asp-controller="Actor" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="Act_Id" value="@Model.Act_Id" />
+
+        <!-- Actor Name -->
+        <div class="mb-3">
+            <label for="Name" class="form-label">Name</label>
+            <input type="text" id="Name" name="Name" value="@Model.Name" class="form-control" required />
+        </div>
+        <!-- Actor Age -->
+        <div class="mb-3">
+            <label for="Age" class="form-label">Name</label>
+            <input type="number" id="Age" name="Age" value="@Model.Age" class="form-control" required />
+        </div>
+
+        <!-- Actor Image -->
+        <div class="mb-3">
+            <label class="form-label">Actor Image</label><br />
+            <img id="actorImg" src="~/ActorsImg/@Model.Img" alt="actor image" />
+            <input type="file" id="ImgFile" name="ImgFile" class="form-control mt-2" accept="image/*" onchange="updateImage(event)" />
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="/Admin/Actor/Index" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function updateImage(event) {
+        const input = event.target;
+        const actorImg = document.getElementById('actorImg');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                actorImg.src = e.target.result; // تغير الصورة القديمة مباشرة
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

@@ -1,0 +1,111 @@
+﻿@model IEnumerable<Cart>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<section class="h-100 bg-light">
+    <div class="container py-5">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">Shopping Cart</h3>
+            <div>
+                <p class="mb-0">
+                    <span class="text-muted">Sort by:</span>
+                    <a href="#!" class="text-body fw-medium">
+                        Price <i class="fas fa-angle-down"></i>
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        @foreach (var item in Model)
+        {
+            <div class="card rounded-3 mb-4 shadow-sm">
+                <div class="card-body p-3 p-md-4">
+                    <div class="row align-items-center">
+                        <!-- Movie Image -->
+                        <div class="col-md-2 col-lg-2">
+                            <img src="~/MovieImages/@item.Movie.MainImg" class="img-fluid rounded-3" alt="@item.Movie.Name">
+                        </div>
+
+                        <!-- Movie Details -->
+                        <div class="col-md-3 col-lg-3">
+                            <p class="lead fw-semibold mb-1">@item.Movie.Name</p>
+                            <p class="text-muted mb-0">@item.Movie.Description</p>
+                        </div>
+
+                        <!-- Quantity Selector -->
+                        <div class="col-md-3 col-lg-2 d-flex align-items-center">
+                            <button class="btn btn-outline-secondary px-2"
+                                    onclick="updateQuantity(@item.Mov_Id, 'down', this)">
+                                <i class="fas fa-minus"></i>
+                            </button>
+
+                            <input type="number" min="0" class="form-control form-control-sm mx-2 text-center"
+                                   value="@item.TicketCount" style="width: 60px;" />
+
+                            <button class="btn btn-outline-secondary px-2"
+                                    onclick="updateQuantity(@item.Mov_Id, 'up', this)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+
+                        <!-- Unit Price -->
+                        <div class="col-md-2 col-lg-2">
+                            <h6 class="mb-0 text-muted">@item.Movie.Price.ToString("C")</h6>
+                        </div>
+
+                        <!-- Subtotal -->
+                        <div class="col-md-2 col-lg-2">
+                            <h6 class="mb-0 fw-bold">@((item.Movie.Price * item.TicketCount).ToString("C"))</h6>
+                        </div>
+
+                        <!-- Delete Button -->
+                        <div class="col-md-1 col-lg-1 text-end">
+                            <form asp-action="Delete" method="post">
+                                <input type="hidden" name="movieId" value="@item.Mov_Id" />
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Discount Code -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body p-3 p-md-4 d-flex flex-column flex-md-row align-items-center">
+                <div class="flex-fill mb-2 mb-md-0 me-md-3">
+                    <input type="text" class="form-control form-control-lg" placeholder="Discount code">
+                </div>
+                <button type="button" class="btn btn-warning btn-lg w-100 w-md-auto">Apply</button>
+            </div>
+        </div>
+
+        <!-- Checkout -->
+        <div class="card">
+            <div class="card-body">
+                <a asp-action="Pay" data-mdb-button-init data-mdb-ripple-init class="btn btn-warning btn-block btn-lg">Proceed to Pay</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Example JS for increment/decrement
+    function updateQuantity(movieId, action, btn) {
+        const input = btn.parentNode.querySelector('input[type=number]');
+        let value = parseInt(input.value);
+
+        if (action === 'up') value++;
+        if (action === 'down' && value > 0) value--;
+
+        input.value = value;
+
+        // TODO: Call backend via fetch/AJAX to update database
+        // fetch(`/User/Show/UpdateTicket?movieId=${movieId}&action=${action}`)
+        //    .then(...);
+    }
+</script>

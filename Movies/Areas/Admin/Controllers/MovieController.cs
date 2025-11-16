@@ -122,12 +122,10 @@ namespace Movies.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
         [HttpGet]
         [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}")]
         public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
         {
-        
             var movie = await _movieRepository.GetOneAsync(
                 e => e.Mov_Id == id,
                 include: [e => e.Category, e => e.Cinema, e => e.MovieActors],
@@ -137,27 +135,26 @@ namespace Movies.Areas.Admin.Controllers
             if (movie == null)
                 return NotFound();
 
-            ViewBag.Categories = await _categoryRepository.GetAsync(cancellationToken: cancellationToken);
-            ViewBag.Directors = await _directorRepository.GetAsync(cancellationToken: cancellationToken);
-            ViewBag.Actors = await _actorRepository.GetAsync(cancellationToken: cancellationToken);
+            // جلب البيانات مع fallback لقائمة فارغة
+            ViewBag.Categories = await _categoryRepository.GetAsync(cancellationToken : cancellationToken) ?? new List<Category>();
+            ViewBag.Directors = await _directorRepository.GetAsync(cancellationToken: cancellationToken) ?? new List<Cinema>();
+            ViewBag.Actors = await _actorRepository.GetAsync(cancellationToken: cancellationToken) ?? new List<Actor>();
 
-            var selectedActors = _movieActorRepository.GetOneAsync(e => e.Mov_Id == id,include: [e => e.Act_Id], cancellationToken: cancellationToken).Result;
-          
-            ViewBag.SelectedActors = selectedActors;
+            // قائمة الممثلين المختارين مسبقًا
+            ViewBag.SelectedActors = movie.MovieActors?.Select(ma => ma.Act_Id).ToList() ?? new List<int>();
 
             return View(movie);
         }
+
         [HttpPost]
         [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}")]
         public async Task<IActionResult> Edit(
-    int id,
-    Movie movie,
-    IFormFile? MainImgFile,
-    IFormFileCollection? SubImgFiles,
-    int CategoryId,
-    int CinemaId,
-    string? SelectedActors,
-    CancellationToken cancellationToken)
+            int id,
+            Movie movie,
+            int CategoryId,
+            int CinemaId,
+            string? SelectedActors,
+            CancellationToken cancellationToken)
         {
             var oldMovie = await _movieRepository.GetOneAsync(
                 e => e.Mov_Id == id,
@@ -170,9 +167,10 @@ namespace Movies.Areas.Admin.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.Categories = await _categoryRepository.GetAsync(cancellationToken: cancellationToken);
-                ViewBag.Directors = await _directorRepository.GetAsync(cancellationToken: cancellationToken);
-                ViewBag.Actors = await _actorRepository.GetAsync(cancellationToken: cancellationToken);
+                ViewBag.Categories = await _categoryRepository.GetAsync(cancellationToken: cancellationToken) ?? new List<Category>();
+                ViewBag.Directors = await _directorRepository.GetAsync(cancellationToken: cancellationToken) ?? new List<Cinema>();
+                ViewBag.Actors = await _actorRepository.GetAsync(cancellationToken: cancellationToken) ?? new List<Actor>();
+                ViewBag.SelectedActors = oldMovie.MovieActors?.Select(ma => ma.Act_Id).ToList() ?? new List<int>();
                 return View(movie);
             }
 
@@ -183,59 +181,12 @@ namespace Movies.Areas.Admin.Controllers
             oldMovie.CategoryId = CategoryId;
             oldMovie.CinemaId = CinemaId;
 
-         
-            if (MainImgFile != null && MainImgFile.Length > 0)
-            {
-                var folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\MovieImages");
-                Directory.CreateDirectory(folder);
-
-
-                if (!string.IsNullOrEmpty(oldMovie.MainImg))
-                {
-                    var oldPath = Path.Combine(folder, oldMovie.MainImg);
-                    if (System.IO.File.Exists(oldPath))
-                        System.IO.File.Delete(oldPath);
-                }
-
-                var fileName = Guid.NewGuid() + Path.GetExtension(MainImgFile.FileName);
-                var filePath = Path.Combine(folder, fileName);
-
-                using var stream = System.IO.File.Create(filePath);
-                await MainImgFile.CopyToAsync(stream);
-                oldMovie.MainImg = fileName;
-            }
-
-            if (SubImgFiles != null && SubImgFiles.Count > 0)
-            {
-                if (!string.IsNullOrEmpty(oldMovie.SubImg))
-                {
-                    var oldImgs = oldMovie.SubImg.Split(';', StringSplitOptions.RemoveEmptyEntries);
-                    foreach (var img in oldImgs)
-                    {
-                        var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\MovieImages", img);
-                        if (System.IO.File.Exists(oldPath))
-                            System.IO.File.Delete(oldPath);
-                    }
-                }
-
-                oldMovie.SubImg = "";
-                foreach (var file in SubImgFiles)
-                {
-                    var folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\MovieImages");
-                    Directory.CreateDirectory(folder);
-                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                    var filePath = Path.Combine(folder, fileName);
-                    using var stream = System.IO.File.Create(filePath);
-                    await file.CopyToAsync(stream);
-                    oldMovie.SubImg += fileName + ";";
-                }
-            }
-
-
+            // حذف الممثلين القدامى
             var allOldActors = oldMovie.MovieActors.ToList();
             foreach (var oldActor in allOldActors)
                 _movieActorRepository.Delete(oldActor);
 
+            // إضافة الممثلين الجدد
             if (!string.IsNullOrEmpty(SelectedActors))
             {
                 var actorIds = SelectedActors.Split(',').Select(int.Parse);
@@ -256,7 +207,6 @@ namespace Movies.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = $"{SD.SUPER_ADMIN_ROLE}, {SD.ADMIN_ROLE}")]
         public async Task<IActionResult> Deletes(int id, CancellationToken cancellationToken)
         {

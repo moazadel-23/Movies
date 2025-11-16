@@ -5,44 +5,89 @@
 }
 
 <div class="container py-5">
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-primary fw-bold mb-0">🎭 All Actors</h2>
         <a href="/Admin/Actor/Create" class="btn btn-success fw-semibold px-4">➕ Create New Actor</a>
     </div>
 
-    <div class="list-group shadow-sm">
+    <!-- Grid of Cards -->
+    <div class="row g-4">
         @foreach (var actor in Model)
         {
-            <div class="list-group-item d-flex align-items-center justify-content-between p-3 mb-2 rounded-3 shadow-sm bg-white">
-                <div class="d-flex align-items-center">
-                    <!-- الصورة -->
-                    <img src="~/ActorsImg/@System.IO.Path.GetFileName(actor.Img)"
-                         alt="@System.IO.Path.GetFileName(actor.Img)"
-                         class="rounded-circle me-3 border shadow-sm"
-                         style="width: 60px; height: 60px; object-fit: cover;" />
+            <div class="col-6 col-sm-4 col-md-3 col-lg-3">
+                <div class="card actor-card shadow-sm h-100 overflow-hidden">
+                    <div class="card-body text-center p-0">
+                        <!-- Actor Image -->
+                        <div class="actor-img-container">
+                            <img src="~/ActorsImg/@System.IO.Path.GetFileName(actor.Img)"
+                                 class="actor-img"
+                                 alt="@actor.Img" />
+                        </div>
 
-                    <!-- اسم الصورة -->
-                   
-                </div>
-                @if (User.IsInRole(SD.SUPER_ADMIN_ROLE) || User.IsInRole(SD.ADMIN_ROLE))
-                {
-                    <div class="d-flex gap-2">
-                        <!-- رابط مباشر لصفحة Edit داخل Area Admin -->
-                        <a href="/Admin/Actor/Edit/@actor.Act_Id" class="btn btn-outline-primary btn-sm">Edit</a>
+                        <!-- Actor Info -->
+                        <div class="p-3">
+                            <!-- الاسم والعمر تحت الصورة -->
+                            <h5 class="fw-bold mb-1 text-truncate" title="@actor.Name">@actor.Name</h5>
+                            <p class="text-muted mb-2">@actor.Age</p>
 
-                        <!-- رابط مباشر لصفحة Delete داخل Area Admin -->
-                        <form action="/Admin/Actor/Delete/@actor.Act_Id" method="post" style="display:inline">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                        </form>
+                            @if (User.IsInRole(SD.SUPER_ADMIN_ROLE) || User.IsInRole(SD.ADMIN_ROLE))
+                            {
+                                <div class="mt-2 d-flex justify-content-center gap-2">
+                                    <a href="/Admin/Actor/Edit/@actor.Act_Id" class="btn btn-outline-primary btn-sm flex-fill">Edit</a>
+
+                                    <form action="/Admin/Actor/Delete/@actor.Act_Id" method="post" class="flex-fill">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">Delete</button>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted small mt-2">No Actions!</p>
+                            }
+                        </div>
                     </div>
-                }
-                else
-                {
-                    <td>No Actions!</td>
-                }
-            
+                </div>
             </div>
         }
     </div>
 </div>
+
+<style>
+    /* Card hover effect */
+    .actor-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+    }
+
+        .actor-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.25);
+        }
+
+    /* Image container to fill the card */
+    .actor-img-container {
+        width: 100%;
+        aspect-ratio: 1 / 1; /* مربع كامل */
+        overflow: hidden;
+    }
+
+    .actor-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+
+    .actor-card:hover .actor-img {
+        transform: scale(1.15);
+    }
+
+    /* Text truncation for long names */
+    .text-truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>

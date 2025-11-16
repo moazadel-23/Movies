@@ -8,56 +8,112 @@
 
 <style>
     body {
-        background-color: #f8f9fa;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #ffffff;
+        font-family: 'Poppins', sans-serif;
+        color: #333;
     }
 
     .card {
-        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.95);
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
         .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
 
-    .btn-primary:hover {
-        background-color: #0056b3;
-        transform: scale(1.03);
+    h3 {
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: #0d6efd;
     }
 
-    .form-control:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+    label {
+        font-weight: 500;
+        color: #555;
     }
+
+    .form-control {
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        background: #fff;
+        color: #333;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 10px rgba(13, 110, 253, 0.2);
+            background: #fff;
+            color: #333;
+        }
+
+    ::placeholder {
+        color: #aaa;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #0d6efd, #6610f2);
+        border: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        letter-spacing: 0.5px;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #6610f2, #0d6efd);
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3);
+        }
 
     #preview {
-        max-width: 200px;
+        max-width: 180px;
+        border-radius: 12px;
+        margin-top: 10px;
+        border: 2px solid #ccc;
         display: none;
-        border-radius: 10px;
-        border: 1px solid #ddd;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .container {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 </style>
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-body p-4">
-                    <h3 class="text-center text-primary mb-4 fw-bold">Add New Actor</h3>
+<div class="container">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h3 class="text-center mb-4">🎬 Add New Actor</h3>
 
-
-                    <form asp-action="Create" method="post" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label class="form-label">Product Image</label>
-                            <input type="file" name="ImgFile" class="form-control" accept="image/*" />
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </form>
-
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <!-- Actor Name -->
+                <div class="mb-3">
+                    <label class="form-label">Actor Name</label>
+                    <input type="text" name="Name" class="form-control" placeholder="Enter actor name" required />
                 </div>
-            </div>
+
+                <!-- Actor Age -->
+                <div class="mb-3">
+                    <label class="form-label">Age</label>
+                    <input type="number" name="Age" class="form-control" placeholder="Enter actor age" min="0" required />
+                </div>
+
+                <!-- Actor Image -->
+                <div class="mb-3">
+                    <label class="form-label">Actor Image</label>
+                    <input type="file" name="ImgFile" class="form-control" accept="image/*" onchange="previewImage(event)" />
+                    <img id="preview" alt="Image Preview" />
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Save Actor</button>
+            </form>
         </div>
     </div>
 </div>
@@ -66,7 +122,6 @@
     function previewImage(event) {
         const input = event.target;
         const preview = document.getElementById('preview');
-        const imgName = document.getElementById('ImgName');
 
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -75,13 +130,9 @@
                 preview.style.display = 'block';
             };
             reader.readAsDataURL(input.files[0]);
-
-            // ضع اسم الصورة في حقل النص
-            imgName.value = input.files[0].name;
         } else {
             preview.src = '#';
             preview.style.display = 'none';
-            imgName.value = '';
         }
     }
 </script>

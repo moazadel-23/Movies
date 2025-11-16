@@ -33,7 +33,7 @@
     <div class="mb-3">
         <label class="form-label fw-semibold">Status</label>
         <div class="form-check form-switch mt-2">
-            <input asp-for="Status" class="form-check-input" type="checkbox" id="StatusSwitch" />
+          
             <label class="form-check-label" for="StatusSwitch">
                 @((Model?.Movie.Status ?? false) ? "Active" : "Inactive")
             </label>
